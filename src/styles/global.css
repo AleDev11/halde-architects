@@ -1,0 +1,347 @@
+@import '@fontsource-variable/schibsted-grotesk';
+@import '@fontsource-variable/newsreader/opsz-italic.css';
+@import '@fontsource/dm-mono/400.css';
+@import '@fontsource/dm-mono/500.css';
+
+/* ── Tokens ─────────────────────────────────────────── */
+:root {
+  --paper: #f3f1ec;
+  --paper-2: #e9e6df;
+  --paper-3: #dcd8cf;
+  --ink: #151515;
+  --ink-2: #3a3936;
+  --stone: #6e6b66;
+  --line: rgb(21 21 21 / 0.14);
+  --line-strong: rgb(21 21 21 / 0.32);
+  --accent: #b0532f;
+  --accent-soft: #d9a184;
+
+  --f-sans: 'Schibsted Grotesk Variable', 'Helvetica Neue', sans-serif;
+  --f-serif: 'Newsreader Variable', Georgia, serif;
+  --f-mono: 'DM Mono', ui-monospace, monospace;
+
+  --margin: clamp(1rem, 3.6vw, 3.5rem);
+  --gutter: clamp(0.75rem, 1.6vw, 1.5rem);
+  --cols: 12;
+
+  --fs-mono: 0.75rem;
+  --fs-small: 0.875rem;
+  --fs-body: clamp(1rem, 0.95rem + 0.2vw, 1.125rem);
+  --fs-lead: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  --fs-h3: clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem);
+  --fs-h2: clamp(2.25rem, 1.2rem + 4.2vw, 5.5rem);
+  --fs-h1: clamp(3.25rem, 1rem + 9vw, 11.5rem);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --nav-h: 4.25rem;
+  color-scheme: light;
+}
+
+/* ── Reset ──────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-sans);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+img,
+picture,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+}
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+:focus-visible {
+  outline: 1.5px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* ── Page transitions (cross-document) ──────────────── */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root) {
+  animation: 420ms var(--ease-in-out) both vt-out;
+}
+::view-transition-new(root) {
+  animation: 620ms var(--ease-out) 80ms both vt-in;
+}
+::view-transition-group(*) {
+  animation-duration: 760ms;
+  animation-timing-function: var(--ease-in-out);
+}
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    transform: translateY(-1.5rem);
+  }
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
+}
+
+/* ── Layout ─────────────────────────────────────────── */
+.wrap {
+  padding-inline: var(--margin);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  column-gap: var(--gutter);
+}
+@media (max-width: 760px) {
+  .grid {
+    --cols: 6;
+  }
+}
+
+/* ── Type helpers ───────────────────────────────────── */
+.mono {
+  font-family: var(--f-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.serif {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 350;
+  letter-spacing: -0.02em;
+}
+.muted {
+  color: var(--stone);
+}
+.lead {
+  font-size: var(--fs-lead);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+.h1 {
+  font-size: var(--fs-h1);
+  line-height: 0.86;
+  letter-spacing: -0.06em;
+}
+.h2 {
+  font-size: var(--fs-h2);
+  letter-spacing: -0.05em;
+}
+.h3 {
+  font-size: var(--fs-h3);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+.rule {
+  height: 1px;
+  background: var(--line);
+  border: 0;
+}
+
+/* Underline link */
+.ulink {
+  position: relative;
+  display: inline-block;
+}
+.ulink::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.1em;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.6s var(--ease-out);
+}
+.ulink:hover::after,
+.ulink[aria-current='page']::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Arrow link */
+.arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+}
+.arrow svg {
+  width: 0.9em;
+  transition: transform 0.5s var(--ease-out);
+}
+.arrow:hover svg {
+  transform: translateX(0.3em);
+}
+
+/* Section label: "01 — Work" */
+.label {
+  display: flex;
+  gap: 0.9rem;
+  align-items: baseline;
+}
+.label::before {
+  content: attr(data-n);
+  color: var(--accent);
+}
+
+/* Media frame used by reveals */
+.frame {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper-2);
+}
+.frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Motion: initial states (only when JS motion is on) ─ */
+html.motion [data-reveal='fade'] {
+  opacity: 0;
+  transform: translateY(1.5rem);
+}
+html.motion [data-reveal='image'] {
+  clip-path: inset(100% 0 0 0);
+}
+html.motion [data-reveal='image']:not(.is-revealed) img {
+  transform: scale(1.18);
+}
+html.motion [data-reveal='lines'] {
+  visibility: hidden;
+}
+html.motion [data-reveal='rule'] {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.split-line {
+  display: block;
+  /* room for descenders inside the clipping wrapper */
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+/* Hairlines that respect the page margin on full-width .wrap sections */
+.bt {
+  background: linear-gradient(var(--line), var(--line)) no-repeat center top / calc(100% - 2 * var(--margin)) 1px;
+}
+.bb {
+  background: linear-gradient(var(--line), var(--line)) no-repeat center bottom / calc(100% - 2 * var(--margin)) 1px;
+}
+
+/* Blueprint grid overlay (toggle with "G") */
+.blueprint {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  padding-inline: var(--margin);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.blueprint.on {
+  opacity: 1;
+}
+.blueprint div {
+  height: 100%;
+  background: rgb(176 83 47 / 0.06);
+  border-inline: 1px solid rgb(176 83 47 / 0.2);
+}
+
+/* Grain */
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  @view-transition {
+    navigation: none;
+  }
+}

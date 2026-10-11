@@ -1,0 +1,66 @@
+---
+import Base from '../layouts/Base.astro';
+import { credits } from '../data/credits';
+---
+
+<Base title="Credits" description="Photography credits for the Halde Architects concept site.">
+  <section class="credits wrap grid">
+    <header class="credits__head">
+      <p class="label mono" data-n="—">Colophon</p>
+      <h1 class="h2" data-reveal="lines" data-instant>Credits</h1>
+      <p class="credits__note">
+        Halde Architects is a fictional studio created as a portfolio concept. All projects, people and quotes are invented.
+        Photography is used under the <a class="ulink" href="https://unsplash.com/license">Unsplash License</a>; thank you to the
+        photographers below.
+      </p>
+      <p class="mono muted">Built with Astro, anime.js and Three.js. Type: Schibsted Grotesk, Newsreader, DM Mono.</p>
+    </header>
+    <ul class="credits__list">
+      {
+        credits.map((c) => (
+          <li>
+            <span class="mono muted">{c.file}</span>
+            <a class="ulink" href={c.url}>
+              {c.by}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .credits {
+    padding-top: calc(var(--nav-h) + clamp(3rem, 8vw, 7rem));
+    padding-bottom: clamp(5rem, 10vw, 9rem);
+    row-gap: 3rem;
+  }
+  .credits__head {
+    grid-column: 1 / span 5;
+    display: grid;
+    gap: 1.75rem;
+    align-content: start;
+  }
+  .credits__note {
+    color: var(--ink-2);
+    max-width: 44ch;
+  }
+  .credits__list {
+    grid-column: 7 / -1;
+    font-size: var(--fs-small);
+  }
+  .credits__list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.7rem;
+    border-bottom: 1px solid var(--line);
+  }
+  @media (max-width: 760px) {
+    .credits__head,
+    .credits__list {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

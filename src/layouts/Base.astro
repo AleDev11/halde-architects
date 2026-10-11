@@ -1,0 +1,116 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import displayFont from '@fontsource-variable/schibsted-grotesk/files/schibsted-grotesk-latin-wght-normal.woff2?url';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = 'Halde is an architecture studio in Copenhagen designing houses, libraries and public places shaped by daylight.',
+} = Astro.props;
+const fullTitle = title ? `${title} — Halde Architects` : 'Halde Architects — Architecture shaped by light';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f3f1ec" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <script is:inline>
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('motion');
+    </script>
+  </head>
+  <body>
+    <a class="skip mono" href="#main">Skip to content</a>
+    <Nav />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <div class="cursor" data-cursor-el aria-hidden="true"><span>View</span></div>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="blueprint grid" aria-hidden="true">
+      {Array.from({ length: 12 }, () => <div />)}
+    </div>
+
+    <script>
+      import { initMotion } from '../scripts/motion';
+      initMotion();
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 200;
+    padding: 0.6rem 0.9rem;
+    background: var(--ink);
+    color: var(--paper);
+    transform: translateY(-200%);
+  }
+  .skip:focus {
+    transform: none;
+  }
+  .cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 150;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .cursor.is-on {
+    opacity: 1;
+  }
+  .cursor span {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: grid;
+    place-items: center;
+    width: 6.5rem;
+    height: 6.5rem;
+    margin: -3.25rem 0 0 -3.25rem;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transform: scale(0.08);
+    transition: transform 0.55s var(--ease-out);
+  }
+  .cursor span {
+    color: transparent;
+  }
+  .cursor.is-big span {
+    transform: scale(1);
+    color: var(--paper);
+  }
+  @media (pointer: coarse) {
+    .cursor {
+      display: none;
+    }
+  }
+</style>

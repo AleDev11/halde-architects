@@ -1,0 +1,145 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="foot" id="contact">
+  <div class="wrap">
+    <p class="label mono foot__label" data-n="—">Contact</p>
+
+    <h2 class="h2 foot__title" data-reveal="lines">
+      Every project begins with a walk around the site at <em class="serif">sunrise.</em>
+    </h2>
+
+    <a class="foot__mail" href="mailto:studio@halde.example" data-cursor="Write">
+      <span>studio@halde.example</span>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 13 13 3M5 3h8v8"></path></svg>
+    </a>
+
+    <div class="foot__cols grid">
+      <div>
+        <p class="mono muted">Studio</p>
+        <address>Strandgade 27B<br />1401 Copenhagen K<br />Denmark</address>
+      </div>
+      <div>
+        <p class="mono muted">New work</p>
+        <p><a class="ulink" href="mailto:ida@halde.example">Ida Halde</a><br />+45 31 22 08 14</p>
+      </div>
+      <div>
+        <p class="mono muted">Careers</p>
+        <p><a class="ulink" href="/studio#join">Two open positions</a></p>
+      </div>
+      <div>
+        <p class="mono muted">Follow</p>
+        <ul>
+          <li><a class="ulink" href="#">Instagram</a></li>
+          <li><a class="ulink" href="#">LinkedIn</a></li>
+          <li><a class="ulink" href="#">Journal</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="foot__base mono">
+      <p>© {year} Halde Architects ApS</p>
+      <p class="muted">Concept site · Photography via <a class="ulink" href="/credits">Unsplash</a></p>
+      <p><span class="muted">CPH</span> <span data-cph-time>--:--:--</span></p>
+      <a href="#main" class="ulink">Back to top ↑</a>
+    </div>
+  </div>
+  <div class="foot__word" aria-hidden="true">Halde</div>
+</footer>
+
+<style>
+  .foot {
+    position: relative;
+    background: var(--ink);
+    color: var(--paper);
+    padding-top: clamp(5rem, 12vw, 10rem);
+    overflow: hidden;
+    --line: rgb(243 241 236 / 0.16);
+  }
+  .foot ::selection {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .foot .muted {
+    color: rgb(243 241 236 / 0.5);
+  }
+  .foot__label {
+    margin-bottom: 2.5rem;
+  }
+  .foot__title {
+    max-width: 16ch;
+  }
+  .foot__title em {
+    color: var(--accent-soft);
+  }
+  .foot__mail {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    margin-top: clamp(2.5rem, 6vw, 5rem);
+    font-size: clamp(1.5rem, 0.8rem + 3.6vw, 4.25rem);
+    letter-spacing: -0.04em;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.2em;
+    transition: border-color 0.5s;
+  }
+  .foot__mail svg {
+    width: 0.6em;
+    transition: transform 0.6s var(--ease-out);
+  }
+  .foot__mail:hover {
+    border-color: var(--paper);
+  }
+  .foot__mail:hover svg {
+    transform: translate(0.12em, -0.12em);
+  }
+  .foot__cols {
+    margin-top: clamp(4rem, 8vw, 7rem);
+    row-gap: 2.5rem;
+    font-size: var(--fs-small);
+    line-height: 1.6;
+  }
+  .foot__cols > div {
+    grid-column: span 3;
+  }
+  .foot__cols .mono {
+    margin-bottom: 0.9rem;
+  }
+  .foot__cols li a {
+    display: inline-block;
+    padding-block: 0.2rem;
+  }
+  address {
+    font-style: normal;
+  }
+  .foot__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-top: clamp(4rem, 8vw, 6rem);
+    padding-block: 1.5rem;
+    border-top: 1px solid var(--line);
+    position: relative;
+    z-index: 1;
+  }
+  .foot__base [data-cph-time] {
+    font-variant-numeric: tabular-nums;
+  }
+  .foot__word {
+    font-size: 34vw;
+    font-weight: 600;
+    letter-spacing: -0.075em;
+    line-height: 0.72;
+    margin: 0 0 -0.04em -0.04em;
+    color: rgb(243 241 236 / 0.05);
+    user-select: none;
+    white-space: nowrap;
+  }
+  @media (max-width: 760px) {
+    .foot__cols > div {
+      grid-column: span 3;
+    }
+  }
+</style>

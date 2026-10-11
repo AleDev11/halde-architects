@@ -1,0 +1,248 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+
+const upcoming = [
+  { title: 'Fjordhuset Sauna', type: 'Leisure', location: 'Hardanger, Norway', year: '2027' },
+  { title: 'Lys School', type: 'Education', location: 'Malmö, Sweden', year: '2027' },
+  { title: 'Amager Crematorium Chapel', type: 'Civic — Competition', location: 'Copenhagen', year: '2028' },
+];
+---
+
+<Base title="Work" description="Selected buildings by Halde Architects: houses, libraries, pavilions and housing shaped by daylight.">
+  <header class="whead wrap grid">
+    <p class="label mono whead__label" data-n="—" data-reveal="fade">Index of work</p>
+    <h1 class="h1 whead__title" data-reveal="lines" data-instant>Work</h1>
+    <p class="lead whead__intro" data-reveal="fade" data-delay="300">
+      Houses, libraries, pavilions and homes — each one designed around the hours it will be used.
+    </p>
+  </header>
+
+  <section class="windex wrap" aria-label="Projects">
+    <div class="windex__head mono muted" aria-hidden="true">
+      <span>No.</span><span>Project</span><span>Type</span><span>Location</span><span>Year</span>
+    </div>
+    <ul class="windex__list" data-index>
+      {
+        projects.map((p, i) => (
+          <li data-reveal="fade" data-delay={i * 80}>
+            <a href={`/work/${p.id}`} class="row" data-preview={i}>
+              <span class="mono row__n">{String(i + 1).padStart(2, '0')}</span>
+              <span class="row__title" style={`view-transition-name: title-${p.id}`}>{p.data.title}</span>
+              <span class="row__type">{p.data.type}</span>
+              <span class="row__loc">{p.data.location}</span>
+              <span class="mono row__year">{p.data.year}</span>
+              <span class="row__thumb frame" style={`view-transition-name: cover-${p.id}`}>
+                <Image src={p.data.cover} alt="" widths={[400, 800]} sizes="(max-width: 760px) 100vw, 1px" />
+              </span>
+            </a>
+          </li>
+        ))
+      }
+      {
+        upcoming.map((u) => (
+          <li class="is-upcoming" data-reveal="fade">
+            <div class="row">
+              <span class="mono row__n">—</span>
+              <span class="row__title">{u.title}</span>
+              <span class="row__type">{u.type}</span>
+              <span class="row__loc">{u.location}</span>
+              <span class="mono row__year">{u.year}</span>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="preview" data-preview-el aria-hidden="true">
+      {
+        projects.map((p) => (
+          <div class="preview__img">
+            <Image src={p.data.cover} alt="" widths={[600, 900]} sizes="26vw" />
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { animate, createAnimatable } from 'animejs';
+
+  const preview = document.querySelector<HTMLElement>('[data-preview-el]');
+  const list = document.querySelector<HTMLElement>('[data-index]');
+  if (preview && list && matchMedia('(pointer: fine) and (min-width: 761px)').matches) {
+    const imgs = [...preview.querySelectorAll<HTMLElement>('.preview__img')];
+    const follow = createAnimatable(preview, { x: 900, y: 900, ease: 'out(3)' });
+    let current = -1;
+
+    list.addEventListener('pointermove', (e) => {
+      follow.x(e.clientX);
+      follow.y(e.clientY);
+    });
+
+    list.querySelectorAll<HTMLElement>('[data-preview]').forEach((row) => {
+      row.addEventListener('pointerenter', () => {
+        const i = Number(row.dataset.preview);
+        preview.classList.add('is-on');
+        if (i === current) return;
+        imgs.forEach((img, j) => {
+          img.style.zIndex = j === i ? '2' : '1';
+          if (j === i) animate(img, { clipPath: ['inset(100% 0 0 0)', 'inset(0% 0 0 0)'], duration: 700, ease: 'out(4)' });
+        });
+        current = i;
+      });
+    });
+    list.addEventListener('pointerleave', () => preview.classList.remove('is-on'));
+  }
+</script>
+
+<style>
+  .whead {
+    padding-top: calc(var(--nav-h) + clamp(3rem, 8vw, 7rem));
+    padding-bottom: clamp(3rem, 6vw, 5rem);
+    row-gap: 2rem;
+    align-items: end;
+  }
+  .whead__label {
+    grid-column: 1 / -1;
+  }
+  .whead__title {
+    grid-column: 1 / span 7;
+    font-size: clamp(5rem, 2rem + 16vw, 17rem);
+  }
+  .whead__intro {
+    grid-column: 9 / -1;
+    padding-bottom: 1rem;
+  }
+  @media (max-width: 760px) {
+    .whead__title,
+    .whead__intro {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .windex {
+    padding-bottom: clamp(6rem, 12vw, 11rem);
+  }
+  .windex__head,
+  .row {
+    display: grid;
+    grid-template-columns: 4rem 3fr 2fr 2fr 4rem;
+    gap: var(--gutter);
+    align-items: baseline;
+  }
+  .windex__head {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .windex__list li {
+    border-bottom: 1px solid var(--line);
+  }
+  .row {
+    padding-block: clamp(1.25rem, 2.4vw, 2rem);
+    transition:
+      opacity 0.5s,
+      padding 0.6s var(--ease-out);
+  }
+  .row__n {
+    color: var(--accent);
+  }
+  .row__title {
+    font-size: clamp(1.6rem, 1rem + 2.4vw, 3.4rem);
+    letter-spacing: -0.045em;
+    line-height: 1;
+    width: fit-content;
+    transition: transform 0.7s var(--ease-out);
+  }
+  .row__type,
+  .row__loc {
+    font-size: var(--fs-small);
+    color: var(--ink-2);
+  }
+  .row__year {
+    text-align: right;
+  }
+  .row__thumb {
+    display: none;
+  }
+  .windex__list:hover a.row {
+    opacity: 0.3;
+  }
+  .windex__list:hover a.row:hover {
+    opacity: 1;
+  }
+  a.row:hover .row__title {
+    transform: translateX(1rem);
+  }
+  .is-upcoming .row {
+    opacity: 0.4;
+  }
+  .is-upcoming .row__title {
+    font-size: clamp(1.2rem, 0.9rem + 1.2vw, 2rem);
+  }
+
+  .preview {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 60;
+    width: clamp(16rem, 24vw, 26rem);
+    aspect-ratio: 4 / 5;
+    /* sits just right of the cursor so the hovered title stays readable */
+    margin: calc(clamp(16rem, 24vw, 26rem) * -0.625) 0 0 2.5rem;
+    pointer-events: none;
+    opacity: 0;
+    scale: 0.85;
+    transition:
+      opacity 0.4s,
+      scale 0.6s var(--ease-out);
+  }
+  .preview.is-on {
+    opacity: 1;
+    scale: 1;
+  }
+  .preview__img {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .preview__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 760px) {
+    .windex__head {
+      display: none;
+    }
+    .row {
+      grid-template-columns: 2.5rem 1fr auto;
+      row-gap: 0.4rem;
+    }
+    .row__type {
+      grid-column: 2;
+      grid-row: 2;
+    }
+    .row__loc {
+      display: none;
+    }
+    .row__year {
+      grid-column: 3;
+      grid-row: 1;
+    }
+    a.row .row__thumb {
+      display: block;
+      grid-column: 1 / -1;
+      aspect-ratio: 16 / 10;
+      margin-top: 1rem;
+    }
+    .preview {
+      display: none;
+    }
+  }
+</style>

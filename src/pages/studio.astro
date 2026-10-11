@@ -1,0 +1,464 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import heroImg from '../assets/img/drawing_3.jpg';
+import modelImg from '../assets/img/model_3.jpg';
+import deskImg from '../assets/img/drawing_1.jpg';
+import whiteImg from '../assets/img/white_2.jpg';
+import t1 from '../assets/img/team_2.jpg';
+import t2 from '../assets/img/team_1.jpg';
+import t3 from '../assets/img/team_4.jpg';
+import t4 from '../assets/img/team_3.jpg';
+import t5 from '../assets/img/team_6.jpg';
+import t6 from '../assets/img/team_5.jpg';
+
+const principles = [
+  {
+    t: 'The hour before the plan',
+    d: 'We decide when a room will be used before we decide where it goes. Orientation is the first drawing, not the last.',
+  },
+  {
+    t: 'Few materials, honestly used',
+    d: 'Concrete, timber, brick, lime. Fewer materials mean fewer junctions, less waste, and buildings that are easier to repair.',
+  },
+  {
+    t: 'Built to grow old',
+    d: 'We design for the second and third owner. A good building should look better at fifty than it did on opening day.',
+  },
+];
+
+const team = [
+  { img: t1, name: 'Ida Halde', role: 'Founding Partner' },
+  { img: t2, name: 'Jonas Brandt', role: 'Partner' },
+  { img: t3, name: 'Freja Lund', role: 'Associate' },
+  { img: t4, name: 'Mikkel Sørensen', role: 'Project Architect' },
+  { img: t5, name: 'Ana Ferreira', role: 'Architect' },
+  { img: t6, name: 'Oskar Vinter', role: 'Model Maker' },
+];
+
+const awards = [
+  { y: 2026, a: 'Housing Design Award — Commended', p: 'Havnen Housing' },
+  { y: 2025, a: 'Wood Architecture Prize', p: 'Ørsted Pavilion' },
+  { y: 2025, a: 'Prize for Small Buildings — Shortlist', p: 'Ørsted Pavilion' },
+  { y: 2024, a: 'Nordic Light Award', p: 'Vestbro Library' },
+  { y: 2024, a: 'Concrete Architecture Award', p: 'Kystlys House' },
+  { y: 2023, a: 'Copenhagen Building of the Year', p: 'Vestbro Library' },
+];
+
+const roles = [
+  { t: 'Project Architect', m: 'Full time — Copenhagen', d: '5+ years, built work in timber or masonry.' },
+  { t: 'Model Maker', m: 'Part time — Copenhagen', d: 'Card, plaster and wood at 1:200 to 1:20.' },
+];
+---
+
+<Base title="Studio" description="Halde is a studio of eleven architects and makers in Copenhagen. Meet the team and the principles behind the work.">
+  <header class="shead wrap grid">
+    <p class="label mono shead__label" data-n="—" data-reveal="fade">Studio</p>
+    <h1 class="h1 shead__title" data-reveal="lines" data-instant>
+      We draw with <em class="serif">daylight.</em>
+    </h1>
+    <p class="lead shead__intro" data-reveal="fade" data-delay="400">
+      Halde was founded in 2012 in a former rope factory on the Christianshavn waterfront. Today we are eleven architects and makers,
+      working on a few projects at a time and staying with each one until the last window is fitted.
+    </p>
+  </header>
+
+  <div class="wrap">
+    <div class="shero frame" data-reveal="image">
+      <div class="shero__inner" data-parallax="7">
+        <Image src={heroImg} alt="An architect drawing with pencil and ruler at a timber desk" widths={[800, 1400, 2000, 2400]} sizes="100vw" loading="eager" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Principles -->
+  <section class="principles wrap grid">
+    <div class="principles__aside">
+      <p class="label mono" data-n="01">Principles</p>
+      <div class="principles__img frame" data-reveal="image">
+        <Image src={whiteImg} alt="White concrete volumes against a pale blue sky" widths={[400, 800]} sizes="(max-width: 760px) 60vw, 25vw" />
+      </div>
+    </div>
+    <ol class="principles__list">
+      {
+        principles.map((p, i) => (
+          <li class="principle">
+            <hr class="rule" data-reveal="rule" />
+            <span class="mono principle__n">0{i + 1}</span>
+            <h2 class="h3 principle__t" data-reveal="lines">{p.t}</h2>
+            <p class="principle__d" data-reveal="fade">{p.d}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <!-- Workshop -->
+  <section class="workshop wrap grid">
+    <figure class="workshop__a">
+      <div class="frame" data-reveal="image">
+        <Image src={modelImg} alt="A white card model with a cantilevered upper floor" widths={[600, 1000, 1600]} sizes="(max-width: 760px) 100vw, 55vw" />
+      </div>
+      <figcaption class="mono muted">The model workshop. Every project is built at 1:50 before it is built at 1:1.</figcaption>
+    </figure>
+    <figure class="workshop__b">
+      <div class="frame" data-reveal="image">
+        <Image src={deskImg} alt="Sketches and drawing tools spread across a desk" widths={[500, 900]} sizes="(max-width: 760px) 100vw, 30vw" />
+      </div>
+      <figcaption class="mono muted">Friday crits: pencils only, no screens.</figcaption>
+    </figure>
+  </section>
+
+  <!-- Team -->
+  <section class="team wrap bt">
+    <header class="team__head grid">
+      <p class="label mono" data-n="02">People</p>
+      <h2 class="h2 team__title" data-reveal="lines">The people in the room.</h2>
+    </header>
+    <ul class="team__grid grid">
+      {
+        team.map((m, i) => (
+          <li class="member" data-reveal="fade" data-delay={(i % 3) * 100}>
+            <div class="member__img frame">
+              <Image src={m.img} alt={`Portrait of ${m.name}`} widths={[400, 700]} sizes="(max-width: 760px) 50vw, 30vw" />
+            </div>
+            <p class="member__name">{m.name}</p>
+            <p class="mono muted">{m.role}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="team__more mono muted">+ five more architects, two students and Bo, the studio dog.</p>
+  </section>
+
+  <!-- Recognition -->
+  <section class="awards wrap grid">
+    <p class="label mono awards__label" data-n="03">Recognition</p>
+    <table class="awards__table">
+      <caption class="sr-only">Awards received by Halde Architects</caption>
+      <thead class="mono muted">
+        <tr><th scope="col">Year</th><th scope="col">Award</th><th scope="col">Project</th></tr>
+      </thead>
+      <tbody>
+        {
+          awards.map((a) => (
+            <tr data-reveal="fade">
+              <td class="mono">{a.y}</td>
+              <td>{a.a}</td>
+              <td class="muted">{a.p}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Join -->
+  <section class="join wrap grid" id="join">
+    <p class="label mono join__label" data-n="04">Join us</p>
+    <div class="join__body">
+      <h2 class="h2" data-reveal="lines">We are hiring.</h2>
+      <ul class="join__list">
+        {
+          roles.map((r) => (
+            <li>
+              <a href="mailto:jobs@halde.example" class="role" data-cursor="Apply">
+                <span class="h3 role__t">{r.t}</span>
+                <span class="mono muted">{r.m}</span>
+                <span class="role__d">{r.d}</span>
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 13 13 3M5 3h8v8" /></svg>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .shead {
+    padding-top: calc(var(--nav-h) + clamp(3rem, 8vw, 7rem));
+    padding-bottom: clamp(3rem, 6vw, 5rem);
+    row-gap: 2rem;
+    align-items: end;
+  }
+  .shead__label {
+    grid-column: 1 / -1;
+  }
+  .shead__title {
+    grid-column: 1 / span 8;
+  }
+  .shead__title em {
+    font-weight: 300;
+  }
+  .shead__intro {
+    grid-column: 9 / -1;
+    font-size: clamp(1.05rem, 0.95rem + 0.45vw, 1.35rem);
+    padding-bottom: 0.6rem;
+  }
+  @media (max-width: 1000px) {
+    .shead__title,
+    .shead__intro {
+      grid-column: 1 / -1;
+    }
+  }
+  .shero {
+    aspect-ratio: 21 / 9;
+  }
+  .shero__inner {
+    position: absolute;
+    inset: -8% 0;
+  }
+  .shero__inner img {
+    height: 100%;
+  }
+  @media (max-width: 760px) {
+    .shero {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  .principles {
+    padding-block: clamp(6rem, 12vw, 11rem);
+    row-gap: 3rem;
+  }
+  .principles__aside {
+    grid-column: 1 / span 4;
+    display: grid;
+    gap: 2.5rem;
+    align-content: start;
+    position: sticky;
+    top: calc(var(--nav-h) + 2rem);
+    align-self: start;
+  }
+  .principles__img {
+    aspect-ratio: 3 / 4;
+    width: 70%;
+  }
+  .principles__list {
+    grid-column: 6 / -1;
+    display: grid;
+    gap: clamp(3.5rem, 7vw, 6rem);
+  }
+  .principle {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    gap: 1rem;
+  }
+  .principle .rule {
+    grid-column: 1 / -1;
+    margin-bottom: 1rem;
+  }
+  .principle__n {
+    color: var(--accent);
+    padding-top: 0.5rem;
+  }
+  .principle__d {
+    grid-column: 2;
+    color: var(--ink-2);
+    max-width: 46ch;
+  }
+  @media (max-width: 760px) {
+    .principles__aside,
+    .principles__list {
+      grid-column: 1 / -1;
+      position: static;
+    }
+    .principles__img {
+      width: 60%;
+    }
+  }
+
+  .workshop {
+    row-gap: 3rem;
+    padding-bottom: clamp(6rem, 12vw, 11rem);
+    align-items: end;
+  }
+  .workshop__a {
+    grid-column: 1 / span 7;
+  }
+  .workshop__a .frame {
+    aspect-ratio: 3 / 2;
+  }
+  .workshop__b {
+    grid-column: 9 / -1;
+  }
+  .workshop__b .frame {
+    aspect-ratio: 2 / 3;
+  }
+  .workshop figcaption {
+    padding-top: 0.9rem;
+    text-transform: none;
+    letter-spacing: 0;
+    max-width: 44ch;
+  }
+  @media (max-width: 760px) {
+    .workshop__a,
+    .workshop__b {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .team {
+    padding-block: clamp(5rem, 10vw, 9rem);
+  }
+  .team__head {
+    row-gap: 1.5rem;
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+  }
+  .team__head .label {
+    grid-column: 1 / span 3;
+  }
+  .team__title {
+    grid-column: 4 / -1;
+  }
+  .team__grid {
+    row-gap: 3rem;
+  }
+  .member {
+    grid-column: span 4;
+  }
+  .member:nth-child(3n + 2) {
+    margin-top: clamp(2rem, 6vw, 6rem);
+  }
+  .member__img {
+    aspect-ratio: 4 / 5;
+    margin-bottom: 1rem;
+  }
+  .member__img img {
+    filter: grayscale(1) contrast(1.04) brightness(1.02);
+    transition:
+      filter 0.8s var(--ease-out),
+      transform 1.2s var(--ease-out);
+  }
+  .member:hover .member__img img {
+    filter: grayscale(0.15);
+    transform: scale(1.03);
+  }
+  .member__name {
+    font-size: 1.25rem;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.2rem;
+  }
+  .team__more {
+    margin-top: 3rem;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  @media (max-width: 760px) {
+    .team__head .label,
+    .team__title {
+      grid-column: 1 / -1;
+    }
+    .member {
+      grid-column: span 3;
+    }
+    .member:nth-child(3n + 2) {
+      margin-top: 0;
+    }
+    .member:nth-child(even) {
+      margin-top: 2.5rem;
+    }
+  }
+
+  .awards {
+    padding-bottom: clamp(5rem, 10vw, 9rem);
+    row-gap: 2rem;
+  }
+  .awards__label {
+    grid-column: 1 / span 3;
+  }
+  .awards__table {
+    grid-column: 4 / -1;
+    border-collapse: collapse;
+    width: 100%;
+    font-size: var(--fs-small);
+  }
+  .awards__table th {
+    text-align: left;
+    font-weight: 400;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .awards__table td {
+    padding-block: 1.1rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: baseline;
+  }
+  .awards__table td:first-child,
+  .awards__table th:first-child {
+    width: 18%;
+  }
+  .awards__table td:nth-child(2) {
+    font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
+    letter-spacing: -0.02em;
+  }
+  @media (max-width: 760px) {
+    .awards__label,
+    .awards__table {
+      grid-column: 1 / -1;
+    }
+    .awards__table td:last-child,
+    .awards__table th:last-child {
+      display: none;
+    }
+  }
+
+  .join {
+    padding-bottom: clamp(6rem, 12vw, 11rem);
+    row-gap: 2rem;
+  }
+  .join__label {
+    grid-column: 1 / span 3;
+  }
+  .join__body {
+    grid-column: 4 / -1;
+  }
+  .join__list {
+    margin-top: clamp(2rem, 5vw, 4rem);
+    border-top: 1px solid var(--line-strong);
+  }
+  .role {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1.4fr auto;
+    gap: 1rem var(--gutter);
+    align-items: baseline;
+    padding-block: 1.75rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .role svg {
+    width: 1.1rem;
+    transition: transform 0.6s var(--ease-out);
+  }
+  .role:hover svg {
+    transform: translate(0.2rem, -0.2rem);
+  }
+  .role__t {
+    transition: color 0.4s;
+  }
+  .role:hover .role__t {
+    color: var(--accent);
+  }
+  .role__d {
+    font-size: var(--fs-small);
+    color: var(--ink-2);
+  }
+  @media (max-width: 760px) {
+    .join__label,
+    .join__body {
+      grid-column: 1 / -1;
+    }
+    .role {
+      grid-template-columns: 1fr auto;
+    }
+    .role .mono,
+    .role__d {
+      grid-column: 1;
+    }
+    .role svg {
+      grid-column: 2;
+      grid-row: 1;
+    }
+  }
+</style>

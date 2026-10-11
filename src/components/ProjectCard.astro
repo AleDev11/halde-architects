@@ -1,0 +1,95 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  index: number;
+  variant: 'a' | 'b' | 'c' | 'd';
+}
+
+const { project, index, variant } = Astro.props;
+const { title, cover, coverAlt, type, location, year } = project.data;
+---
+
+<article class:list={['card', `card--${variant}`]}>
+  <a href={`/work/${project.id}`} data-cursor="View">
+    <div class="card__frame frame" data-reveal="image" style={`view-transition-name: cover-${project.id}`}>
+      <Image src={cover} alt={coverAlt} widths={[600, 1000, 1600, 2200]} sizes="(max-width: 760px) 100vw, 60vw" />
+    </div>
+    <div class="card__meta">
+      <span class="mono card__n">{String(index + 1).padStart(2, '0')}</span>
+      <h3 class="card__title" style={`view-transition-name: title-${project.id}`}>{title}</h3>
+      <span class="mono muted card__info">{type} — {location}</span>
+      <span class="mono muted card__year">{year}</span>
+    </div>
+  </a>
+</article>
+
+<style>
+  .card a {
+    display: block;
+  }
+  .card--a {
+    grid-column: 1 / span 8;
+  }
+  .card--a .card__frame {
+    aspect-ratio: 4 / 3;
+  }
+  .card--b {
+    grid-column: 10 / -1;
+    margin-top: 40%;
+  }
+  .card--b .card__frame {
+    aspect-ratio: 3 / 4;
+  }
+  .card--c {
+    grid-column: 2 / span 5;
+  }
+  .card--c .card__frame {
+    aspect-ratio: 4 / 5;
+  }
+  .card--d {
+    grid-column: 8 / -1;
+    margin-top: 28%;
+  }
+  .card--d .card__frame {
+    aspect-ratio: 5 / 4;
+  }
+
+  .card__frame img {
+    transition: transform 1.4s var(--ease-out);
+  }
+  .card a:hover .card__frame img {
+    transform: scale(1.04);
+  }
+  .card__meta {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.2rem 1rem;
+    align-items: baseline;
+    padding-top: 1rem;
+  }
+  .card__n {
+    color: var(--accent);
+  }
+  .card__title {
+    font-size: clamp(1.25rem, 1rem + 0.9vw, 1.9rem);
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+    width: fit-content;
+  }
+  .card__info {
+    grid-column: 2;
+  }
+  .card__year {
+    grid-row: 1;
+    grid-column: 3;
+  }
+  @media (max-width: 760px) {
+    .card {
+      grid-column: 1 / -1 !important;
+      margin-top: 0 !important;
+    }
+  }
+</style>

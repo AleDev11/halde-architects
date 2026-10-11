@@ -1,0 +1,371 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+  return projects.map((project, i) => ({
+    params: { slug: project.id },
+    props: { project, index: i, next: projects[(i + 1) % projects.length] },
+  }));
+}
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  index: number;
+  next: CollectionEntry<'projects'>;
+}
+
+const { project, index, next } = Astro.props;
+const { Content } = await render(project);
+const d = project.data;
+
+const meta = [
+  ['Type', d.type],
+  ['Location', d.location],
+  ['Year', String(d.year)],
+  ['Area', d.area],
+  ['Client', d.client],
+  ['Status', d.status],
+];
+
+// Pair consecutive "half" images so they sit side by side
+type G = (typeof d.gallery)[number];
+const rows: G[][] = [];
+for (const g of d.gallery) {
+  const last = rows.at(-1);
+  if (g.layout === 'half' && last?.length === 1 && last[0].layout === 'half') last.push(g);
+  else rows.push([g]);
+}
+---
+
+<Base title={d.title} description={d.summary}>
+  <article class="project">
+    <header class="phead wrap grid">
+      <p class="mono phead__crumb" data-reveal="fade">
+        <a href="/work" class="ulink">Work</a> <span class="muted">/ {String(index + 1).padStart(2, '0')}</span>
+      </p>
+      <h1 class="h1 phead__title" style={`view-transition-name: title-${project.id}`}>{d.title}</h1>
+      <p class="lead phead__summary" data-reveal="fade" data-delay="200">{d.summary}</p>
+    </header>
+
+    <div class="wrap">
+      <div class="pcover frame" style={`view-transition-name: cover-${project.id}`}>
+        <div class="pcover__inner" data-parallax="6">
+          <Image src={d.cover} alt={d.coverAlt} widths={[800, 1400, 2000, 2400]} sizes="100vw" loading="eager" fetchpriority="high" />
+        </div>
+      </div>
+    </div>
+
+    <dl class="pmeta wrap grid bb">
+      {
+        meta.map(([k, v], i) => (
+          <div data-reveal="fade" data-delay={i * 60}>
+            <dt class="mono muted">{k}</dt>
+            <dd>{v}</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <section class="pbody wrap grid">
+      <p class="label mono pbody__label" data-n="—">The project</p>
+      <div class="pbody__text" data-reveal="fade">
+        <Content />
+      </div>
+    </section>
+
+    <section class="gallery wrap">
+      {
+        rows.map((row) => (
+          <div class:list={['gallery__row', `gallery__row--${row[0].layout}`, { 'is-pair': row.length > 1 }]}>
+            {row.map((g) => (
+              <figure class="gallery__item">
+                <div class="frame" data-reveal="image">
+                  <Image src={g.src} alt={g.alt} widths={[600, 1000, 1600, 2200]} sizes={row[0].layout === 'full' ? '100vw' : '50vw'} />
+                </div>
+                <figcaption class="mono muted">{g.alt}</figcaption>
+              </figure>
+            ))}
+          </div>
+        ))
+      }
+    </section>
+
+    <section class="pfacts wrap grid">
+      {
+        d.facts.map((f) => (
+          <div class="pfact">
+            <hr class="rule" data-reveal="rule" />
+            <p class="mono muted">{f.label}</p>
+            <p class="h3" data-reveal="fade">{f.value}</p>
+          </div>
+        ))
+      }
+    </section>
+
+    {
+      d.quote && (
+        <blockquote class="pquote wrap">
+          <p class="serif" data-reveal="lines">“{d.quote.text}”</p>
+          <footer class="mono muted" data-reveal="fade">— {d.quote.author}</footer>
+        </blockquote>
+      )
+    }
+
+    <section class="pteam wrap grid bt">
+      <p class="label mono" data-n="—">Project team</p>
+      <ul>
+        {d.team.map((t) => <li>{t}</li>)}
+      </ul>
+    </section>
+
+    <a href={`/work/${next.id}`} class="pnext bt" data-cursor="Next">
+      <div class="wrap pnext__inner">
+        <span class="mono muted">Next project</span>
+        <span class="h1 pnext__title">{next.data.title}</span>
+        <span class="mono muted">{next.data.type} — {next.data.location}</span>
+      </div>
+      <div class="pnext__img" aria-hidden="true">
+        <Image src={next.data.cover} alt="" widths={[600, 1000]} sizes="40vw" />
+      </div>
+    </a>
+  </article>
+</Base>
+
+<style>
+  .phead {
+    padding-top: calc(var(--nav-h) + clamp(3rem, 8vw, 7rem));
+    padding-bottom: clamp(2.5rem, 5vw, 4.5rem);
+    row-gap: 2rem;
+    align-items: end;
+  }
+  .phead__crumb {
+    grid-column: 1 / -1;
+  }
+  .phead__title {
+    grid-column: 1 / span 8;
+    width: fit-content;
+  }
+  .phead__summary {
+    grid-column: 9 / -1;
+    padding-bottom: 0.4rem;
+  }
+  @media (max-width: 1000px) {
+    .phead__title,
+    .phead__summary {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .pcover {
+    aspect-ratio: 16 / 9;
+  }
+  .pcover__inner {
+    position: absolute;
+    inset: -8% 0;
+  }
+  .pcover__inner img {
+    height: 100%;
+  }
+  @media (max-width: 760px) {
+    .pcover {
+      aspect-ratio: 4 / 5;
+    }
+  }
+
+  .pmeta {
+    padding-block: 2rem;
+    row-gap: 1.75rem;
+    margin-bottom: clamp(5rem, 10vw, 9rem);
+  }
+  .pmeta div {
+    grid-column: span 2;
+  }
+  .pmeta dt {
+    margin-bottom: 0.4rem;
+  }
+  .pmeta dd {
+    margin: 0;
+    font-size: var(--fs-small);
+  }
+  @media (max-width: 1000px) {
+    .pmeta div {
+      grid-column: span 4;
+    }
+  }
+  @media (max-width: 760px) {
+    .pmeta div {
+      grid-column: span 3;
+    }
+  }
+
+  .pbody {
+    row-gap: 2rem;
+    padding-bottom: clamp(5rem, 10vw, 9rem);
+  }
+  .pbody__label {
+    grid-column: 1 / span 3;
+  }
+  .pbody__text {
+    grid-column: 5 / span 7;
+    display: grid;
+    gap: 1.4em;
+    max-width: 62ch;
+  }
+  .pbody__text :global(p:first-child) {
+    font-size: var(--fs-lead);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+  }
+  .pbody__text :global(em) {
+    font-family: var(--f-serif);
+    font-size: 1.08em;
+    line-height: 1;
+  }
+  @media (max-width: 760px) {
+    .pbody__label,
+    .pbody__text {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .gallery {
+    display: grid;
+    gap: clamp(3rem, 7vw, 7rem);
+    padding-bottom: clamp(5rem, 10vw, 9rem);
+  }
+  .gallery__row {
+    display: grid;
+    gap: var(--gutter);
+  }
+  .gallery__row.is-pair {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+  .gallery__row.is-pair .gallery__item:last-child {
+    margin-top: 18%;
+  }
+  .gallery__row--full .frame {
+    aspect-ratio: 16 / 9;
+  }
+  .gallery__row--half .frame {
+    aspect-ratio: 4 / 5;
+  }
+  .gallery__row--offset {
+    width: min(100%, 58%);
+    margin-left: auto;
+  }
+  .gallery__row--offset .frame {
+    aspect-ratio: 3 / 2;
+  }
+  .gallery__item figcaption {
+    padding-top: 0.8rem;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  @media (max-width: 760px) {
+    .gallery__row.is-pair {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+    .gallery__row.is-pair .gallery__item:last-child {
+      margin-top: 0;
+    }
+    .gallery__row--offset {
+      width: 100%;
+    }
+  }
+
+  .pfacts {
+    row-gap: 3rem;
+    padding-bottom: clamp(5rem, 10vw, 9rem);
+  }
+  .pfact {
+    grid-column: span 4;
+    display: grid;
+    gap: 0.9rem;
+    align-content: start;
+  }
+  .pfact .rule {
+    margin-bottom: 0.8rem;
+  }
+  .pfact .h3 {
+    max-width: 14ch;
+  }
+  @media (max-width: 760px) {
+    .pfact {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .pquote {
+    padding-bottom: clamp(5rem, 10vw, 9rem);
+  }
+  .pquote p {
+    font-size: clamp(2rem, 1rem + 4vw, 5.25rem);
+    line-height: 1.02;
+    max-width: 20ch;
+  }
+  .pquote footer {
+    margin-top: 2rem;
+  }
+
+  .pteam {
+    row-gap: 1.5rem;
+    padding-block: 2rem clamp(5rem, 10vw, 9rem);
+  }
+  .pteam .label {
+    grid-column: 1 / span 4;
+  }
+  .pteam ul {
+    grid-column: 5 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 2.5rem;
+  }
+
+  .pnext {
+    position: relative;
+    display: block;
+    padding-block: clamp(5rem, 12vw, 10rem);
+    overflow: hidden;
+  }
+  .pnext__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 1.25rem;
+  }
+  .pnext__title {
+    transition: transform 1s var(--ease-out);
+  }
+  .pnext__img {
+    position: absolute;
+    right: var(--margin);
+    top: 50%;
+    width: min(32vw, 30rem);
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    clip-path: inset(50% 0 50% 0);
+    transform: translateY(-50%);
+    transition: clip-path 1s var(--ease-out);
+  }
+  .pnext__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .pnext:hover .pnext__img {
+    clip-path: inset(0 0 0 0);
+  }
+  .pnext:hover .pnext__title {
+    transform: translateX(1.5rem);
+  }
+  @media (max-width: 760px) {
+    .pnext__img {
+      display: none;
+    }
+  }
+</style>
