@@ -2,7 +2,8 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://halde.example',
+  site: 'https://aledev11.github.io',
+  base: '/halde-architects',
   image: {
     layout: 'constrained',
     responsiveStyles: true,

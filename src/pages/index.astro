@@ -1,4 +1,5 @@
 ---
+import { url } from '../utils/url';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
@@ -39,7 +40,7 @@ const layouts = ['a', 'b', 'c', 'd'] as const;
       <Image src={modelImg} alt="White card model of a small house on a table" widths={[400, 800]} sizes="(max-width: 760px) 50vw, 22vw" />
     </div>
     <p class="manifesto__text" data-manifesto>{manifesto}</p>
-    <a href="/studio" class="arrow mono manifesto__link" data-reveal="fade">
+    <a href={url('/studio')} class="arrow mono manifesto__link" data-reveal="fade">
       About the studio
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 8h12M9 3l5 5-5 5"></path></svg>
     </a>
@@ -57,7 +58,7 @@ const layouts = ['a', 'b', 'c', 'd'] as const;
     </div>
     <div class="work__more">
       <hr class="rule" data-reveal="rule" />
-      <a href="/work" class="arrow work__all">
+      <a href={url('/work')} class="arrow work__all">
         <span class="h3">All projects</span>
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 8h12M9 3l5 5-5 5"></path></svg>
       </a>
