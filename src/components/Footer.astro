@@ -1,4 +1,5 @@
 ---
+import { url } from '../utils/url';
 const year = new Date().getFullYear();
 ---
 
@@ -26,7 +27,7 @@ const year = new Date().getFullYear();
       </div>
       <div>
         <p class="mono muted">Careers</p>
-        <p><a class="ulink" href="/studio#join">Two open positions</a></p>
+        <p><a class="ulink" href={url('/studio#join')}>Two open positions</a></p>
       </div>
       <div>
         <p class="mono muted">Follow</p>
@@ -40,7 +41,7 @@ const year = new Date().getFullYear();
 
     <div class="foot__base mono">
       <p>© {year} Halde Architects ApS</p>
-      <p class="muted">Concept site · Photography via <a class="ulink" href="/credits">Unsplash</a></p>
+      <p class="muted">Concept site · Photography via <a class="ulink" href={url('/credits')}>Unsplash</a></p>
       <p><span class="muted">CPH</span> <span data-cph-time>--:--:--</span></p>
       <a href="#main" class="ulink">Back to top ↑</a>
     </div>
