@@ -234,6 +234,10 @@ const ticks = hourTicks(start, end);
   .sun__copy a {
     pointer-events: auto;
   }
+  /* Scales with height too, so the headline never climbs over the date control on short screens. */
+  .sun__title {
+    font-size: max(1.9rem, min(var(--fs-h1), calc((100svh - 21rem) / 2.9)));
+  }
   .sun__line {
     display: block;
     overflow: hidden;
@@ -361,6 +365,9 @@ const ticks = hourTicks(start, end);
   @media (max-width: 760px) {
     .sun {
       height: 280vh;
+    }
+    .sun__title {
+      font-size: var(--fs-h1);
     }
     .sun__copy {
       flex-direction: column;
