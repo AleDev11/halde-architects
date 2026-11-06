@@ -1,0 +1,11 @@
+---
+import ErrorPage from '../components/ErrorPage.astro';
+---
+
+<ErrorPage code={403} note="Site access only" heading="This door stays closed." body="You do not have permission to see this page. If you think you should, write to the studio and we will check the drawings.">
+  <path d="M20 160 H220" />
+  <path d="M50 160 V40 H190 V160" />
+  <path d="M95 160 V76 H145 V160" />
+  <path d="M135 118 h4" />
+  <path d="M95 160 L145 76 M145 160 L95 76" stroke-dasharray="3 5" />
+</ErrorPage>

@@ -10,10 +10,12 @@ import monoFont from '@fontsource/dm-mono/files/dm-mono-latin-400-normal.woff2?u
 interface Props {
   title?: string;
   description?: string;
+  noindex?: boolean;
 }
 
 const {
   title,
+  noindex = false,
   description = 'Concept site for Halde, a fictional architecture studio in Copenhagen, built around a live 3D study of the real sun through the year.',
 } = Astro.props;
 const fullTitle = title ? `${title} | Halde Architects` : 'Halde Architects | Architecture shaped by light';
@@ -39,7 +41,7 @@ const socialImage = new URL(url('/og.jpg'), Astro.site);
     <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={serifFont} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={monoFont} as="font" type="font/woff2" crossorigin />
-    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={fullTitle} />
