@@ -18,76 +18,82 @@ function smoothScroll() {
   });
 }
 
+/**
+ * Elements waiting for their reveal. Anything at or above the trigger line
+ * plays, including what the visitor skipped with an anchor link, the End key
+ * or a restored scroll position, so a jump never leaves a blank section behind.
+ */
+const pending = new Map<Element, () => void>();
+const TRIGGER_LINE = 0.94;
+
+function flushReveals() {
+  const line = window.innerHeight * TRIGGER_LINE;
+  for (const [el, play] of pending) {
+    if (el.getBoundingClientRect().top >= line) continue;
+    pending.delete(el);
+    play();
+  }
+}
+
+function whenSeen(el: Element, play: () => void) {
+  pending.set(el, play);
+  requestAnimationFrame(flushReveals);
+}
+
 /** Text that rises line by line from behind a mask. */
 function revealLines() {
   document.querySelectorAll<HTMLElement>('[data-reveal="lines"]').forEach((el) => {
     const split = splitText(el, { lines: { class: 'split-line', wrap: 'clip' } });
     const delay = Number(el.dataset.delay ?? 0);
+    let seen = false;
     el.style.visibility = 'visible';
-    split.addEffect(({ lines }) =>
-      animate(lines, {
-        y: ['105%', '0%'],
-        duration: 1300,
-        delay: stagger(90, { start: delay }),
-        ease: 'out(4)',
-        autoplay: el.hasAttribute('data-instant') ? true : onScroll({ target: el, enter: 'bottom-=8% top' }),
-      }),
-    );
+    // Re-runs when a resize re-splits the text; once seen, lines stay at rest.
+    split.addEffect(({ lines }) => {
+      if (seen) return;
+      for (const line of lines) if (line instanceof HTMLElement) line.style.transform = 'translateY(105%)';
+      whenSeen(el, () => {
+        seen = true;
+        animate(lines, { y: ['105%', '0%'], duration: 1300, delay: stagger(90, { start: delay }), ease: 'out(4)' });
+      });
+    });
   });
 }
 
 /** Image curtains: the frame opens upward while the photo settles. */
 function revealImages() {
   document.querySelectorAll<HTMLElement>('[data-reveal="image"]').forEach((el) => {
-    const img = el.querySelector('img');
-    const trigger = onScroll({ target: el, enter: 'bottom-=6% top' });
-    animate(el, { clipPath: ['inset(100% 0% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: 1500, ease: 'inOut(4)', autoplay: trigger });
-    if (img)
+    whenSeen(el, () => {
+      const img = el.querySelector('img');
+      animate(el, { clipPath: ['inset(100% 0% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: 1500, ease: 'inOut(4)' });
+      if (!img) return;
       animate(img, {
         scale: [1.18, 1],
         duration: 2200,
         ease: 'out(3)',
-        autoplay: onScroll({ target: el, enter: 'bottom-=6% top' }),
         // hand the transform back to CSS so hover states keep working
         onComplete: () => {
           el.classList.add('is-revealed');
           img.style.removeProperty('transform');
         },
       });
+    });
   });
 }
 
 function revealFades() {
   document.querySelectorAll<HTMLElement>('[data-reveal="fade"]').forEach((el) => {
-    animate(el, {
-      opacity: [0, 1],
-      y: ['1.5rem', '0rem'],
-      duration: 1100,
-      delay: Number(el.dataset.delay ?? 0),
-      ease: 'out(3)',
-      autoplay: onScroll({ target: el, enter: 'bottom-=5% top' }),
-    });
+    whenSeen(el, () =>
+      animate(el, {
+        opacity: [0, 1],
+        y: ['1.5rem', '0rem'],
+        duration: 1100,
+        delay: Number(el.dataset.delay ?? 0),
+        ease: 'out(3)',
+      }),
+    );
   });
   document.querySelectorAll<HTMLElement>('[data-reveal="rule"]').forEach((el) => {
-    animate(el, { scaleX: [0, 1], duration: 1600, ease: 'inOut(3)', autoplay: onScroll({ target: el, enter: 'bottom-=5% top' }) });
-  });
-}
-
-/** Numbers that count up once in view. */
-function counters() {
-  document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
-    const end = Number(el.dataset.count);
-    const pad = el.dataset.pad ? Number(el.dataset.pad) : 0;
-    const state = { v: 0 };
-    const render = () => (el.textContent = String(Math.round(state.v)).padStart(pad, '0'));
-    render();
-    animate(state, {
-      v: end,
-      duration: 2200,
-      ease: 'out(4)',
-      onUpdate: render,
-      autoplay: onScroll({ target: el, enter: 'bottom-=10% top' }),
-    });
+    whenSeen(el, () => animate(el, { scaleX: [0, 1], duration: 1600, ease: 'inOut(3)' }));
   });
 }
 
@@ -174,12 +180,14 @@ export function initMotion() {
   header();
   clocks();
   blueprint();
+  document.documentElement.classList.add('motion-ready');
   if (reduced) return;
   smoothScroll();
+  window.addEventListener('scroll', flushReveals, { passive: true });
+  window.addEventListener('resize', flushReveals, { passive: true });
   revealLines();
   revealImages();
   revealFades();
-  counters();
   parallax();
   cursor();
 }

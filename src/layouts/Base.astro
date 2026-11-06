@@ -31,7 +31,12 @@ const fullTitle = title ? `${title} â€” Halde Architects` : 'Halde Architects â€
     <meta property="og:description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <script is:inline>
-      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('motion');
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const root = document.documentElement;
+        root.classList.add('motion');
+        // If the scripts never arrive, show the page rather than hide it behind its reveals.
+        setTimeout(() => root.classList.contains('motion-ready') || root.classList.remove('motion'), 4000);
+      }
     </script>
   </head>
   <body>
