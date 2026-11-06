@@ -25,7 +25,7 @@ facts:
 team: [Ida Halde, Jonas Brandt, Mikkel Sørensen, Oskar Vinter]
 ---
 
-Most housing blocks are shaped by the plot boundary. Havnen was shaped by the sun. Starting from a simple rule — every home must receive at least three hours of direct sunlight on the darkest day of the year — we let the building's massing step down toward the south, carving terraces where the light needed room to pass.
+Most housing blocks are shaped by the plot boundary. Havnen was shaped by the sun. Starting from a simple rule, that every home must receive at least three hours of direct sunlight on the darkest day of the year, we let the building's massing step down toward the south, carving terraces where the light needed room to pass.
 
 The facades are built from 1.1 million reclaimed bricks, salvaged from three demolished warehouses in the old harbour. Their colour varies from deep plum to pale salmon, giving the block the texture of something that has always been there.
 

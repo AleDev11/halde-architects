@@ -101,7 +101,7 @@ h3,
 h4 {
   font-weight: 500;
   line-height: 0.95;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.04em;
   text-wrap: balance;
 }
 p {
@@ -237,16 +237,6 @@ p {
   transform: translateX(0.3em);
 }
 
-/* Section label: "01 — Work" */
-.label {
-  display: flex;
-  gap: 0.9rem;
-  align-items: baseline;
-}
-.label::before {
-  content: attr(data-n);
-  color: var(--accent);
-}
 
 /* Media frame used by reveals */
 .frame {
