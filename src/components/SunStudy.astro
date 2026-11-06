@@ -24,7 +24,7 @@ const ticks = hourTicks(start, end);
           {
             SUN_DATES.map((d) => (
               <label class="sun__date">
-                <input type="radio" name="sun-date" value={d.id} checked={d === DEFAULT_DATE} />
+                <input type="radio" name="sun-date" value={d.id} checked={d === DEFAULT_DATE} autocomplete="off" />
                 <span>{d.label}</span>
               </label>
             ))
@@ -82,12 +82,25 @@ const ticks = hourTicks(start, end);
 
 <script>
   import { animate, stagger } from 'animejs';
+  import { createReadout, initialState } from '../scripts/sun-readout';
 
   const root = document.querySelector<HTMLElement>('[data-sun]');
-  if (root) {
-    if (document.documentElement.classList.contains('motion')) {
+  const section = document.querySelector<HTMLElement>('[data-sun-section]');
+  if (root && section) {
+    const html = document.documentElement;
+    // Correct before the 3D chunk arrives, so a reload never shows the sunrise values
+    root.classList.add('is-settling');
+    createReadout(root)(initialState(section, matchMedia('(prefers-reduced-motion: reduce)').matches));
+    requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove('is-settling')));
+
+    if (html.classList.contains('motion') && !html.classList.contains('is-returning')) {
       animate('[data-intro]', { y: ['110%', '0%'], duration: 1400, delay: stagger(110, { start: 150 }), ease: 'out(4)' });
       animate('[data-intro-fade], .sun__meta, .sun__phases', { opacity: [0, 1], duration: 1100, delay: stagger(90, { start: 700 }), ease: 'out(3)' });
+      try {
+        sessionStorage.setItem('halde:intro', '1');
+      } catch {
+        // private modes can refuse storage; the intro simply plays again
+      }
     }
     // Three.js loads after the headline has painted, so text never waits on WebGL
     const start = () => import('../scripts/sun-study').then((m) => m.initSunStudy(root));
@@ -123,7 +136,7 @@ const ticks = hourTicks(start, end);
     width: 100%;
     height: 100%;
     opacity: 0;
-    transition: opacity 0.8s;
+    transition: opacity 0.6s;
   }
   :global(.has-gl) .sun__canvas {
     opacity: 1;
@@ -259,6 +272,9 @@ const ticks = hourTicks(start, end);
     opacity: 1;
     transform: none;
   }
+  :global(.is-settling) .sun__phases p {
+    transition: none;
+  }
   .sun__phases span {
     display: block;
     margin-bottom: 0.5rem;
@@ -333,12 +349,12 @@ const ticks = hourTicks(start, end);
     white-space: nowrap;
   }
 
-  :global(html.motion) .sun__meta,
-  :global(html.motion) .sun__phases,
-  :global(html.motion) [data-intro-fade] {
+  :global(html.motion:not(.is-returning)) .sun__meta,
+  :global(html.motion:not(.is-returning)) .sun__phases,
+  :global(html.motion:not(.is-returning)) [data-intro-fade] {
     opacity: 0;
   }
-  :global(html.motion) [data-intro] {
+  :global(html.motion:not(.is-returning)) [data-intro] {
     transform: translateY(110%);
   }
 

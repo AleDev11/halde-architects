@@ -1,0 +1,10 @@
+---
+import ErrorPage from '../components/ErrorPage.astro';
+---
+
+<ErrorPage code={500} note="Structural fault" heading="Something gave way on our side." body="The fault is in our structure, not in your request. Please try again in a few minutes while we shore it up.">
+  <path d="M20 160 H220" />
+  <path d="M60 160 V40 H180 V160" />
+  <path d="M60 80 H180 M60 120 H180 M100 40 V160 M140 40 V160" stroke-opacity="0.35" />
+  <path d="M128 40 L114 66 L132 84 L106 112 L124 132 L112 160" stroke-width="1.5" />
+</ErrorPage>

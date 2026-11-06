@@ -50,6 +50,10 @@ const isCurrent = (href: string) => href !== '#contact' && path.startsWith(href)
     border-bottom: 1px solid transparent;
     view-transition-name: nav;
   }
+  /* A reload lands already scrolled: the bar takes its state without animating. */
+  :global(html:not(.motion-ready)) .nav {
+    transition: none;
+  }
   .nav:global(.is-scrolled) {
     background: rgb(243 241 236 / 0.82);
     backdrop-filter: blur(14px) saturate(1.2);

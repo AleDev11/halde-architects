@@ -1,0 +1,64 @@
+---
+import { url } from '../utils/url';
+import Base from '../layouts/Base.astro';
+
+interface Props {
+  code: number;
+  note: string;
+  heading: string;
+  body: string;
+}
+
+const { code, note, heading, body } = Astro.props;
+---
+
+<Base title={heading} description={body} noindex>
+  <section class="error wrap grid">
+    <div class="error__copy">
+      <p class="mono muted">Error {code} · {note}</p>
+      <h1 class="h2">{heading}</h1>
+      <p class="error__body">{body}</p>
+      <a href={url('/')} class="arrow mono">
+        Back to the sun study
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 8h12M9 3l5 5-5 5"></path></svg>
+      </a>
+    </div>
+    <svg class="error__fig" viewBox="0 0 240 180" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true">
+      <slot />
+    </svg>
+  </section>
+</Base>
+
+<style>
+  .error {
+    min-height: 82svh;
+    align-items: end;
+    row-gap: 3rem;
+    padding-block: calc(var(--nav-h) + 3rem) clamp(3rem, 8vw, 6rem);
+  }
+  .error__copy {
+    grid-column: 1 / span 7;
+    display: grid;
+    justify-items: start;
+    gap: 1.5rem;
+  }
+  .error__body {
+    max-width: 44ch;
+    color: var(--ink-2);
+  }
+  .error__fig {
+    grid-column: 9 / -1;
+    width: 100%;
+    color: var(--ink-2);
+  }
+  @media (max-width: 760px) {
+    .error__copy,
+    .error__fig {
+      grid-column: 1 / -1;
+    }
+    .error__fig {
+      grid-row: 1;
+      max-width: 14rem;
+    }
+  }
+</style>
