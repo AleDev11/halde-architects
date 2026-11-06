@@ -1,0 +1,26 @@
+---
+import { url } from '../utils/url';
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page not found" description="This page does not exist on the Halde Architects concept site.">
+  <section class="missing wrap">
+    <p class="mono muted">Error 404 · 00:00, no sun</p>
+    <h1 class="h2">This room was never built.</h1>
+    <a href={url('/')} class="arrow mono">
+      Back to the sun study
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 8h12M9 3l5 5-5 5"></path></svg>
+    </a>
+  </section>
+</Base>
+
+<style>
+  .missing {
+    min-height: 80svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 1.5rem;
+    padding-block: calc(var(--nav-h) + 3rem) clamp(3rem, 8vw, 6rem);
+  }
+</style>
