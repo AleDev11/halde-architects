@@ -20,13 +20,6 @@ const steps = [
   { t: 'Build', d: 'We stay on site through construction, adjusting openings as the real light arrives.' },
 ];
 
-const stats = [
-  { n: 14, l: 'Years in practice' },
-  { n: 62, l: 'Buildings completed' },
-  { n: 11, l: 'Architects & makers' },
-  { n: 9, l: 'International awards' },
-];
-
 const layouts = ['a', 'b', 'c', 'd'] as const;
 ---
 
@@ -35,7 +28,7 @@ const layouts = ['a', 'b', 'c', 'd'] as const;
 
   <!-- Manifesto -->
   <section class="manifesto wrap grid">
-    <p class="label mono manifesto__label" data-n="01">Studio</p>
+    <p class="label mono manifesto__label">Studio</p>
     <div class="manifesto__img frame" data-reveal="image">
       <Image src={modelImg} alt="White card model of a small house on a table" widths={[400, 800]} sizes="(max-width: 760px) 50vw, 22vw" />
     </div>
@@ -49,7 +42,7 @@ const layouts = ['a', 'b', 'c', 'd'] as const;
   <!-- Selected work -->
   <section class="work wrap" id="work">
     <header class="work__head grid">
-      <p class="label mono" data-n="02">Selected work</p>
+      <p class="label mono">Selected work</p>
       <h2 class="h2 work__title" data-reveal="lines">Buildings that keep time.</h2>
       <p class="mono muted work__count">({String(projects.length).padStart(2, '0')})</p>
     </header>
@@ -68,7 +61,7 @@ const layouts = ['a', 'b', 'c', 'd'] as const;
   <!-- Approach -->
   <section class="approach wrap bt">
     <header class="approach__head grid">
-      <p class="label mono" data-n="03">Approach</p>
+      <p class="label mono">Approach</p>
       <h2 class="h2 approach__title" data-reveal="lines">Four steps. The same, <em class="serif">every time.</em></h2>
     </header>
     <ol class="approach__list grid">
@@ -124,27 +117,11 @@ const layouts = ['a', 'b', 'c', 'd'] as const;
         “Light is the first material. Concrete, timber and brick only give it somewhere to land.”
       </p>
       <footer class="mono" data-reveal="fade">
-        Ida Halde <span class="muted">— Founding Partner</span>
+        Ida Halde <span class="muted">Founding Partner</span>
       </footer>
     </blockquote>
   </section>
 
-  <!-- Stats -->
-  <section class="stats wrap">
-    <ul class="stats__list grid">
-      {
-        stats.map((s) => (
-          <li class="stat">
-            <hr class="rule" data-reveal="rule" />
-            <span class="stat__n" data-count={s.n} data-pad="2">
-              {String(s.n).padStart(2, '0')}
-            </span>
-            <span class="mono muted">{s.l}</span>
-          </li>
-        ))
-      }
-    </ul>
-  </section>
 </Base>
 
 <script>
@@ -346,31 +323,4 @@ const layouts = ['a', 'b', 'c', 'd'] as const;
     }
   }
 
-  /* Stats */
-  .stats {
-    padding-bottom: clamp(6rem, 12vw, 11rem);
-  }
-  .stats__list {
-    row-gap: 3rem;
-  }
-  .stat {
-    grid-column: span 3;
-    display: grid;
-    gap: 0.75rem;
-  }
-  .stat .rule {
-    margin-bottom: 1rem;
-  }
-  .stat__n {
-    font-size: clamp(4rem, 2rem + 6vw, 8.5rem);
-    font-weight: 400;
-    letter-spacing: -0.06em;
-    line-height: 0.9;
-    font-variant-numeric: tabular-nums;
-  }
-  @media (max-width: 760px) {
-    .stat {
-      grid-column: span 3;
-    }
-  }
 </style>

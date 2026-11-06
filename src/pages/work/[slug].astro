@@ -71,7 +71,7 @@ for (const g of d.gallery) {
     </dl>
 
     <section class="pbody wrap grid">
-      <p class="label mono pbody__label" data-n="—">The project</p>
+      <p class="label mono pbody__label">The project</p>
       <div class="pbody__text" data-reveal="fade">
         <Content />
       </div>
@@ -110,13 +110,13 @@ for (const g of d.gallery) {
       d.quote && (
         <blockquote class="pquote wrap">
           <p class="serif" data-reveal="lines">“{d.quote.text}”</p>
-          <footer class="mono muted" data-reveal="fade">— {d.quote.author}</footer>
+          <footer class="mono muted" data-reveal="fade">{d.quote.author}</footer>
         </blockquote>
       )
     }
 
     <section class="pteam wrap grid bt">
-      <p class="label mono" data-n="—">Project team</p>
+      <p class="label mono">Project team</p>
       <ul>
         {d.team.map((t) => <li>{t}</li>)}
       </ul>
@@ -126,7 +126,7 @@ for (const g of d.gallery) {
       <div class="wrap pnext__inner">
         <span class="mono muted">Next project</span>
         <span class="h1 pnext__title">{next.data.title}</span>
-        <span class="mono muted">{next.data.type} — {next.data.location}</span>
+        <span class="mono muted">{next.data.type} · {next.data.location}</span>
       </div>
       <div class="pnext__img" aria-hidden="true">
         <Image src={next.data.cover} alt="" widths={[600, 1000]} sizes="40vw" />

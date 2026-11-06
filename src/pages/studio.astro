@@ -37,23 +37,23 @@ const team = [
 ];
 
 const awards = [
-  { y: 2026, a: 'Housing Design Award — Commended', p: 'Havnen Housing' },
+  { y: 2026, a: 'Housing Design Award · Commended', p: 'Havnen Housing' },
   { y: 2025, a: 'Wood Architecture Prize', p: 'Ørsted Pavilion' },
-  { y: 2025, a: 'Prize for Small Buildings — Shortlist', p: 'Ørsted Pavilion' },
+  { y: 2025, a: 'Prize for Small Buildings · Shortlist', p: 'Ørsted Pavilion' },
   { y: 2024, a: 'Nordic Light Award', p: 'Vestbro Library' },
   { y: 2024, a: 'Concrete Architecture Award', p: 'Kystlys House' },
   { y: 2023, a: 'Copenhagen Building of the Year', p: 'Vestbro Library' },
 ];
 
 const roles = [
-  { t: 'Project Architect', m: 'Full time — Copenhagen', d: '5+ years, built work in timber or masonry.' },
-  { t: 'Model Maker', m: 'Part time — Copenhagen', d: 'Card, plaster and wood at 1:200 to 1:20.' },
+  { t: 'Project Architect', m: 'Full time · Copenhagen', d: '5+ years, built work in timber or masonry.' },
+  { t: 'Model Maker', m: 'Part time · Copenhagen', d: 'Card, plaster and wood at 1:200 to 1:20.' },
 ];
 ---
 
 <Base title="Studio" description="Halde is a studio of eleven architects and makers in Copenhagen. Meet the team and the principles behind the work.">
   <header class="shead wrap grid">
-    <p class="label mono shead__label" data-n="—" data-reveal="fade">Studio</p>
+    <p class="label mono shead__label" data-reveal="fade">Studio</p>
     <h1 class="h1 shead__title" data-reveal="lines" data-instant>
       We draw with <em class="serif">daylight.</em>
     </h1>
@@ -74,7 +74,7 @@ const roles = [
   <!-- Principles -->
   <section class="principles wrap grid">
     <div class="principles__aside">
-      <p class="label mono" data-n="01">Principles</p>
+      <p class="label mono">Principles</p>
       <div class="principles__img frame" data-reveal="image">
         <Image src={whiteImg} alt="White concrete volumes against a pale blue sky" widths={[400, 800]} sizes="(max-width: 760px) 60vw, 25vw" />
       </div>
@@ -112,7 +112,7 @@ const roles = [
   <!-- Team -->
   <section class="team wrap bt">
     <header class="team__head grid">
-      <p class="label mono" data-n="02">People</p>
+      <p class="label mono">People</p>
       <h2 class="h2 team__title" data-reveal="lines">The people in the room.</h2>
     </header>
     <ul class="team__grid grid">
@@ -133,7 +133,7 @@ const roles = [
 
   <!-- Recognition -->
   <section class="awards wrap grid">
-    <p class="label mono awards__label" data-n="03">Recognition</p>
+    <p class="label mono awards__label">Recognition</p>
     <table class="awards__table">
       <caption class="sr-only">Awards received by Halde Architects</caption>
       <thead class="mono muted">
@@ -155,7 +155,7 @@ const roles = [
 
   <!-- Join -->
   <section class="join wrap grid" id="join">
-    <p class="label mono join__label" data-n="04">Join us</p>
+    <p class="label mono join__label">Join us</p>
     <div class="join__body">
       <h2 class="h2" data-reveal="lines">We are hiring.</h2>
       <ul class="join__list">

@@ -9,16 +9,16 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 const upcoming = [
   { title: 'Fjordhuset Sauna', type: 'Leisure', location: 'Hardanger, Norway', year: '2027' },
   { title: 'Lys School', type: 'Education', location: 'Malmö, Sweden', year: '2027' },
-  { title: 'Amager Crematorium Chapel', type: 'Civic — Competition', location: 'Copenhagen', year: '2028' },
+  { title: 'Amager Crematorium Chapel', type: 'Civic · Competition', location: 'Copenhagen', year: '2028' },
 ];
 ---
 
 <Base title="Work" description="Selected buildings by Halde Architects: houses, libraries, pavilions and housing shaped by daylight.">
   <header class="whead wrap grid">
-    <p class="label mono whead__label" data-n="—" data-reveal="fade">Index of work</p>
+    <p class="label mono whead__label" data-reveal="fade">Index of work</p>
     <h1 class="h1 whead__title" data-reveal="lines" data-instant>Work</h1>
     <p class="lead whead__intro" data-reveal="fade" data-delay="300">
-      Houses, libraries, pavilions and homes — each one designed around the hours it will be used.
+      Houses, libraries, pavilions and homes, each one designed around the hours it will be used.
     </p>
   </header>
 
@@ -47,7 +47,7 @@ const upcoming = [
         upcoming.map((u) => (
           <li class="is-upcoming" data-reveal="fade">
             <div class="row">
-              <span class="mono row__n">—</span>
+              <span class="mono row__n">·</span>
               <span class="row__title">{u.title}</span>
               <span class="row__type">{u.type}</span>
               <span class="row__loc">{u.location}</span>
