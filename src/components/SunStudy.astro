@@ -1,8 +1,12 @@
 ---
 import { Image } from 'astro:assets';
 import fallback from '../assets/img/model_2.jpg';
+import { DEFAULT_DATE, SITE, SUN_DATES, dayRange, formatHour, hourTicks, sunPosition } from '../scripts/solar';
 
-const ticks = Array.from({ length: 13 }, (_, i) => 7 + i);
+const { day, utcOffset, long } = DEFAULT_DATE;
+const { start, end } = dayRange(day, utcOffset);
+const first = sunPosition(day, start, utcOffset);
+const ticks = hourTicks(start, end);
 ---
 
 <section class="sun" data-sun-section aria-label="Sun study introduction">
@@ -13,8 +17,20 @@ const ticks = Array.from({ length: 13 }, (_, i) => 7 + i);
 
     <div class="sun__meta wrap">
       <div class="mono">
-        <p>Fig. 01 — Sun study</p>
-        <p class="muted">21 June · 55.676° N, 12.568° E</p>
+        <p>Fig. 01 · Sun study</p>
+        <p class="muted">{SITE.lat}° N, {SITE.lon}° E</p>
+        <fieldset class="sun__dates">
+          <legend class="sun__sr">Date of the sun study</legend>
+          {
+            SUN_DATES.map((d) => (
+              <label class="sun__date">
+                <input type="radio" name="sun-date" value={d.id} checked={d === DEFAULT_DATE} />
+                <span>{d.label}</span>
+              </label>
+            ))
+          }
+        </fieldset>
+        <p class="muted" data-sun-caption aria-live="polite">{long}</p>
       </div>
       <div class="sun__north mono" aria-hidden="true">
         <span class="sun__north-dial" data-north>
@@ -31,7 +47,7 @@ const ticks = Array.from({ length: 13 }, (_, i) => 7 + i);
       </h1>
 
       <div class="sun__side">
-        <div class="sun__phases" aria-live="polite">
+        <div class="sun__phases">
           <p data-phase class="is-active"><span class="mono muted">Morning</span>Light arrives low from the east and finds the rooms we wake up in.</p>
           <p data-phase><span class="mono muted">Midday</span>At its highest, the sun is held back by deep reveals and a floating roof.</p>
           <p data-phase><span class="mono muted">Evening</span>Long shadows stretch across the garden. The house turns west to watch.</p>
@@ -45,17 +61,19 @@ const ticks = Array.from({ length: 13 }, (_, i) => 7 + i);
 
     <div class="sun__dial wrap" data-intro-fade>
       <div class="sun__readout mono">
-        <span class="sun__time" data-sun-time>06:30</span>
-        <span><span class="muted">AZ</span> <span data-sun-az>—</span></span>
-        <span><span class="muted">EL</span> <span data-sun-el>—</span></span>
+        <span class="sun__time" data-sun-time>{formatHour(start)}</span>
+        <span><span class="muted">AZ</span> <span data-sun-az>{first.azimuth.toFixed(1)}°</span></span>
+        <span><span class="muted">EL</span> <span data-sun-el>{first.elevation.toFixed(1)}°</span></span>
       </div>
       <div class="sun__track" aria-hidden="true">
         <div class="sun__progress"></div>
-        {ticks.map((h) => (
-          <span class:list={['sun__tick mono', { major: h % 2 === 0 }]} style={`--i:${(h - 6.5) / 13}`}>
-            {h % 2 === 0 && <b>{String(h).padStart(2, '0')}</b>}
-          </span>
-        ))}
+        <div data-sun-ticks>
+          {ticks.map(({ hour, at }) => (
+            <span class:list={['sun__tick mono', { major: hour % 2 === 0 }]} style={`--i:${at}`}>
+              {hour % 2 === 0 && <b>{String(hour).padStart(2, '0')}</b>}
+            </span>
+          ))}
+        </div>
       </div>
       <p class="mono muted sun__hint">Scroll to move the sun</p>
     </div>
@@ -131,6 +149,52 @@ const ticks = Array.from({ length: 13 }, (_, i) => 7 + i);
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+  }
+  .sun__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .sun__dates {
+    display: flex;
+    gap: 0.25rem;
+    margin: 0.8rem 0 0.35rem -0.55rem;
+    padding: 0;
+    border: 0;
+  }
+  .sun__date {
+    position: relative;
+    cursor: pointer;
+  }
+  .sun__date input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .sun__date span {
+    display: block;
+    padding: 0.45rem 0.55rem;
+    color: var(--stone);
+    border-bottom: 1px solid transparent;
+    transition:
+      color 0.25s,
+      border-color 0.25s;
+  }
+  .sun__date:hover span {
+    color: var(--ink);
+  }
+  .sun__date input:checked + span {
+    color: var(--ink);
+    border-color: var(--accent);
+  }
+  .sun__date input:focus-visible + span {
+    outline: 1.5px solid var(--accent);
+    outline-offset: 2px;
   }
   .sun__north {
     display: flex;
@@ -245,7 +309,7 @@ const ticks = Array.from({ length: 13 }, (_, i) => 7 + i);
     border-radius: 50%;
     background: var(--accent);
   }
-  .sun__tick {
+  .sun__track :global(.sun__tick) {
     position: absolute;
     left: calc(var(--i) * 100%);
     bottom: 0;
@@ -253,10 +317,10 @@ const ticks = Array.from({ length: 13 }, (_, i) => 7 + i);
     height: 0.35rem;
     background: var(--line-strong);
   }
-  .sun__tick.major {
+  .sun__track :global(.sun__tick.major) {
     height: 0.65rem;
   }
-  .sun__tick b {
+  .sun__track :global(.sun__tick b) {
     position: absolute;
     bottom: 1rem;
     left: 0;
@@ -300,6 +364,10 @@ const ticks = Array.from({ length: 13 }, (_, i) => 7 + i);
     }
     .sun__hint {
       display: none;
+    }
+    .sun__date input {
+      inset: -0.5rem 0;
+      height: auto;
     }
   }
   @media (prefers-reduced-motion: reduce) {
