@@ -1,6 +1,7 @@
 import * as THREE from 'three';
-import { animate, onScroll, stagger } from 'animejs';
-import { DEFAULT_DATE, SUN_DATES, dayRange, formatHour, hourTicks, sunPosition, type SunDate } from './solar';
+import { animate, stagger } from 'animejs';
+import { SUN_DATES, dayRange, hourTicks, type SunDate } from './solar';
+import { cameraAngle, createReadout, initialState, scrollProgress, sunFrame } from './sun-readout';
 
 /**
  * Sun study: a white maquette on a board, lit by the real sun over Copenhagen.
@@ -36,14 +37,11 @@ const TREES: [number, number, number][] = [
   [6.6, -8.5, 1],
 ];
 
-/** Highest sun of the year over Copenhagen, the reference for warmth and intensity. */
-const PEAK_ELEVATION = 57.8;
-/** Below this the directional light would graze the board and lose its shadows. */
-const MIN_ELEVATION = 2;
-
 export function initSunStudy(root: HTMLElement) {
   const canvas = root.querySelector<HTMLCanvasElement>('canvas')!;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const returning = document.documentElement.classList.contains('is-returning');
+  const section = root.closest<HTMLElement>('[data-sun-section]')!;
 
   let renderer: THREE.WebGLRenderer;
   try {
@@ -64,7 +62,7 @@ export function initSunStudy(root: HTMLElement) {
   // ── Camera: axonometric, like a presentation drawing
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 400);
   const target = new THREE.Vector3(0, 1.4, 0);
-  const orbit = { angle: -0.62, tilt: 0.62, radius: 90, zoom: 1 };
+  const orbit = { tilt: 0.62, radius: 90, zoom: 1 };
 
   // ── Lights
   const hemi = new THREE.HemisphereLight(0xffffff, 0xe2ddd3, 2);
@@ -198,37 +196,27 @@ export function initSunStudy(root: HTMLElement) {
   resize();
 
   // ── State driven by scroll
-  const state = { p: reduced ? 0.69 : 0, day: DEFAULT_DATE.day, offset: DEFAULT_DATE.utcOffset };
+  const state = initialState(section, reduced);
   const pointer = { x: 0, y: 0, sx: 0, sy: 0 };
 
-  const ui = {
-    time: root.querySelector<HTMLElement>('[data-sun-time]'),
-    az: root.querySelector<HTMLElement>('[data-sun-az]'),
-    el: root.querySelector<HTMLElement>('[data-sun-el]'),
-    north: root.querySelector<HTMLElement>('[data-north]'),
-    phases: [...root.querySelectorAll<HTMLElement>('[data-phase]')],
-    ticks: root.querySelector<HTMLElement>('[data-sun-ticks]'),
-    caption: root.querySelector<HTMLElement>('[data-sun-caption]'),
-    dates: [...root.querySelectorAll<HTMLInputElement>('input[name="sun-date"]')],
-  };
+  const paintReadout = createReadout(root);
+  const ticksEl = root.querySelector<HTMLElement>('[data-sun-ticks]');
+  const caption = root.querySelector<HTMLElement>('[data-sun-caption]');
+  const dates = [...root.querySelectorAll<HTMLInputElement>('input[name="sun-date"]')];
 
   const warm = new THREE.Color(0xffa877);
   const noon = new THREE.Color(0xfff7ec);
   const sunColor = new THREE.Color();
-  let lastPhase = -1;
 
   const update = () => {
-    const { start, end } = dayRange(state.day, state.offset);
-    const hour = start + state.p * (end - start);
-    const position = sunPosition(state.day, hour, state.offset);
-    const { azimuth } = position;
-    const elevation = Math.max(position.elevation, MIN_ELEVATION);
+    // ease towards the scroll position, starting from wherever the page loaded
+    if (!reduced) state.p += (scrollProgress(section) - state.p) * 0.12;
+    const { azimuth, elevation, warmth: k } = sunFrame(state);
     const el = THREE.MathUtils.degToRad(elevation);
     const az = THREE.MathUtils.degToRad(azimuth);
     const dist = 60;
     // north = -z, east = +x
     sun.position.set(Math.sin(az) * Math.cos(el) * dist, Math.sin(el) * dist, -Math.cos(az) * Math.cos(el) * dist);
-    const k = THREE.MathUtils.clamp(elevation / PEAK_ELEVATION, 0, 1);
     sunColor.copy(warm).lerp(noon, Math.pow(k, 0.6));
     sun.color.copy(sunColor);
     sun.intensity = 2.2 + k * 1.3;
@@ -238,8 +226,7 @@ export function initSunStudy(root: HTMLElement) {
     // camera: slow orbit tied to the day + pointer parallax
     pointer.sx += (pointer.x - pointer.sx) * 0.05;
     pointer.sy += (pointer.y - pointer.sy) * 0.05;
-    const p = state.p;
-    const a = orbit.angle + p * 0.5 + pointer.sx * 0.06;
+    const a = cameraAngle(state.p) + pointer.sx * 0.06;
     const t = orbit.tilt + pointer.sy * 0.04;
     camera.position.set(
       target.x + Math.sin(a) * Math.cos(t) * orbit.radius,
@@ -250,28 +237,14 @@ export function initSunStudy(root: HTMLElement) {
     camera.updateProjectionMatrix();
     camera.lookAt(target);
 
-    // overlay readouts
-    if (ui.time) ui.time.textContent = formatHour(hour);
-    if (ui.az) ui.az.textContent = `${azimuth.toFixed(1)}°`;
-    if (ui.el) ui.el.textContent = `${elevation.toFixed(1)}°`;
-    if (ui.north) ui.north.style.transform = `rotate(${THREE.MathUtils.radToDeg(a) + 180}deg)`;
-    root.style.setProperty('--day', p.toFixed(4));
-    root.style.setProperty('--warmth', (1 - k).toFixed(3));
-    // sun glow drifts across the screen through the day
-    root.style.setProperty('--sun-x', `${94 - p * 86}%`);
-
-    const phase = p < 0.33 ? 0 : p < 0.7 ? 1 : 2;
-    if (phase !== lastPhase) {
-      ui.phases.forEach((ph, i) => ph.classList.toggle('is-active', i === phase));
-      lastPhase = phase;
-    }
+    paintReadout(state, a);
   };
 
   // ── Date control
   const renderTicks = (date: SunDate) => {
-    if (!ui.ticks) return;
+    if (!ticksEl) return;
     const { start, end } = dayRange(date.day, date.utcOffset);
-    ui.ticks.replaceChildren(
+    ticksEl.replaceChildren(
       ...hourTicks(start, end).map(({ hour, at }) => {
         const tick = document.createElement('span');
         const major = hour % 2 === 0;
@@ -283,11 +256,11 @@ export function initSunStudy(root: HTMLElement) {
     );
   };
 
-  ui.dates.forEach((input) =>
+  dates.forEach((input) =>
     input.addEventListener('change', () => {
       const date = SUN_DATES.find((d) => d.id === input.value);
       if (!date) return;
-      if (ui.caption) ui.caption.textContent = date.long;
+      if (caption) caption.textContent = date.long;
       renderTicks(date);
       animate(state, { day: date.day, offset: date.utcOffset, duration: reduced ? 0 : 1200, ease: 'inOut(3)' });
     }),
@@ -312,7 +285,7 @@ export function initSunStudy(root: HTMLElement) {
     pointer.y = (e.clientY / window.innerHeight) * 2 - 1;
   });
 
-  if (reduced) {
+  if (reduced || returning) {
     root.classList.add('is-ready');
     return;
   }
@@ -334,12 +307,4 @@ export function initSunStudy(root: HTMLElement) {
       onComplete: () => root.classList.add('is-ready'),
     },
   );
-
-  // ── Scroll drives the clock from sunrise to sunset
-  const section = root.closest<HTMLElement>('[data-sun-section]')!;
-  animate(state, {
-    p: [0, 1],
-    ease: 'linear',
-    autoplay: onScroll({ target: section, enter: 'top top', leave: 'bottom bottom', sync: 0.12 }),
-  });
 }

@@ -51,6 +51,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  overscroll-behavior-y: none;
 }
 html.lenis,
 html.lenis body {
@@ -251,20 +252,20 @@ p {
 }
 
 /* ── Motion: initial states (only when JS motion is on) ─ */
-html.motion [data-reveal='fade'] {
+html.motion [data-reveal='fade']:not([data-seen]) {
   opacity: 0;
   transform: translateY(1.5rem);
 }
-html.motion [data-reveal='image'] {
+html.motion [data-reveal='image']:not([data-seen]) {
   clip-path: inset(100% 0 0 0);
 }
 html.motion [data-reveal='image']:not(.is-revealed) img {
   transform: scale(1.18);
 }
-html.motion [data-reveal='lines'] {
+html.motion [data-reveal='lines']:not([data-seen]) {
   visibility: hidden;
 }
-html.motion [data-reveal='rule'] {
+html.motion [data-reveal='rule']:not([data-seen]) {
   transform: scaleX(0);
   transform-origin: left;
 }
@@ -284,6 +285,66 @@ html.motion [data-reveal='rule'] {
 }
 
 /* Blueprint grid overlay (toggle with "G") */
+/* ── Scrollbar ──────────────────────────────────────── */
+html.has-scrollbar {
+  scrollbar-width: none;
+}
+html.has-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 95;
+  display: none;
+  width: 1.1rem;
+  color: #fff;
+  mix-blend-mode: difference;
+  touch-action: none;
+  user-select: none;
+}
+html.has-scrollbar .scrollbar:not([hidden]) {
+  display: block;
+}
+.scrollbar__thumb {
+  position: absolute;
+  top: 0;
+  right: 0.3rem;
+  width: 2px;
+  background: currentColor;
+  opacity: 0.4;
+  will-change: transform;
+  transition:
+    opacity 0.35s,
+    width 0.25s var(--ease-out);
+}
+.scrollbar.is-active .scrollbar__thumb,
+.scrollbar:hover .scrollbar__thumb,
+.scrollbar.is-dragging .scrollbar__thumb {
+  opacity: 1;
+}
+.scrollbar:hover .scrollbar__thumb,
+.scrollbar.is-dragging .scrollbar__thumb {
+  width: 4px;
+}
+.scrollbar__ticks {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+.scrollbar:hover .scrollbar__ticks,
+.scrollbar.is-dragging .scrollbar__ticks {
+  opacity: 0.55;
+}
+.scrollbar__ticks i {
+  position: absolute;
+  right: 0.3rem;
+  width: 0.55rem;
+  height: 1px;
+  background: currentColor;
+}
+
 .blueprint {
   position: fixed;
   inset: 0;

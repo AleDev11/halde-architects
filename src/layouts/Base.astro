@@ -4,6 +4,8 @@ import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import displayFont from '@fontsource-variable/schibsted-grotesk/files/schibsted-grotesk-latin-wght-normal.woff2?url';
+import serifFont from '@fontsource-variable/newsreader/files/newsreader-latin-opsz-italic.woff2?url';
+import monoFont from '@fontsource/dm-mono/files/dm-mono-latin-400-normal.woff2?url';
 
 interface Props {
   title?: string;
@@ -27,8 +29,16 @@ const socialImage = new URL(url('/og.jpg'), Astro.site);
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#f3f1ec" />
+    <meta name="color-scheme" content="light" />
+    <style is:inline>
+      html {
+        background: #f3f1ec;
+      }
+    </style>
     <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
     <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={serifFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={monoFont} as="font" type="font/woff2" crossorigin />
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
@@ -41,12 +51,24 @@ const socialImage = new URL(url('/og.jpg'), Astro.site);
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="generator" content={Astro.generator} />
     <script is:inline>
-      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      (() => {
         const root = document.documentElement;
-        root.classList.add('motion');
+        const stored = (key) => {
+          try {
+            return sessionStorage.getItem(key);
+          } catch {
+            return null;
+          }
+        };
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+        if (matchMedia('(pointer: fine)').matches) root.classList.add('has-scrollbar');
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          root.classList.add('motion');
+          if (stored('halde:intro')) root.classList.add('is-returning');
+        }
         // If the scripts never arrive, show the page rather than hide it behind its reveals.
-        setTimeout(() => root.classList.contains('motion-ready') || root.classList.remove('motion'), 4000);
-      }
+        setTimeout(() => root.classList.contains('motion-ready') || root.classList.remove('motion', 'has-scrollbar'), 4000);
+      })();
     </script>
   </head>
   <body>
@@ -62,6 +84,52 @@ const socialImage = new URL(url('/og.jpg'), Astro.site);
     <div class="blueprint grid" aria-hidden="true">
       {Array.from({ length: 12 }, () => <div />)}
     </div>
+    <div class="scrollbar" data-scrollbar aria-hidden="true">
+      <div class="scrollbar__ticks" data-scrollbar-ticks></div>
+      <div class="scrollbar__thumb" data-scrollbar-thumb></div>
+    </div>
+
+    <!-- Runs before the first paint, so a reload lands in place with nothing to re-animate. -->
+    <script is:inline>
+      (() => {
+        const key = `halde:scroll:${location.pathname}`;
+        addEventListener('pagehide', () => {
+          try {
+            sessionStorage.setItem(key, String(scrollY));
+          } catch {
+            // private modes can refuse storage; the page simply reopens at the top
+          }
+        });
+
+        const [entry] = performance.getEntriesByType('navigation');
+        if (entry?.type === 'reload' || entry?.type === 'back_forward') {
+          let y = 0;
+          try {
+            y = Number(sessionStorage.getItem(key)) || 0;
+          } catch {
+            y = 0;
+          }
+          if (y) scrollTo(0, y);
+          const line = innerHeight * 0.94;
+          for (const el of document.querySelectorAll('[data-reveal]')) {
+            if (el.getBoundingClientRect().top >= line) continue;
+            el.dataset.seen = '';
+            if (el.dataset.reveal !== 'image') continue;
+            el.classList.add('is-revealed');
+            // On screen again: skip lazy loading so the cached photo paints with the page.
+            for (const img of el.querySelectorAll('img')) {
+              img.loading = 'eager';
+              img.decoding = 'sync';
+            }
+          }
+        }
+
+        document.querySelector('[data-nav]')?.classList.toggle('is-scrolled', scrollY > 40);
+
+        const time = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Copenhagen', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format();
+        for (const el of document.querySelectorAll('[data-cph-time]')) el.textContent = time;
+      })();
+    </script>
 
     <script>
       import { initMotion } from '../scripts/motion';

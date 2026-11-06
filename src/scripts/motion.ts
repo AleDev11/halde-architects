@@ -1,5 +1,6 @@
 import Lenis from 'lenis';
 import { animate, onScroll, splitText, stagger } from 'animejs';
+import { initScrollbar } from './scrollbar';
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -42,7 +43,7 @@ function whenSeen(el: Element, play: () => void) {
 
 /** Text that rises line by line from behind a mask. */
 function revealLines() {
-  document.querySelectorAll<HTMLElement>('[data-reveal="lines"]').forEach((el) => {
+  document.querySelectorAll<HTMLElement>('[data-reveal="lines"]:not([data-seen])').forEach((el) => {
     const split = splitText(el, { lines: { class: 'split-line', wrap: 'clip' } });
     const delay = Number(el.dataset.delay ?? 0);
     let seen = false;
@@ -61,7 +62,7 @@ function revealLines() {
 
 /** Image curtains: the frame opens upward while the photo settles. */
 function revealImages() {
-  document.querySelectorAll<HTMLElement>('[data-reveal="image"]').forEach((el) => {
+  document.querySelectorAll<HTMLElement>('[data-reveal="image"]:not([data-seen])').forEach((el) => {
     whenSeen(el, () => {
       const img = el.querySelector('img');
       animate(el, { clipPath: ['inset(100% 0% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: 1500, ease: 'inOut(4)' });
@@ -81,7 +82,7 @@ function revealImages() {
 }
 
 function revealFades() {
-  document.querySelectorAll<HTMLElement>('[data-reveal="fade"]').forEach((el) => {
+  document.querySelectorAll<HTMLElement>('[data-reveal="fade"]:not([data-seen])').forEach((el) => {
     whenSeen(el, () =>
       animate(el, {
         opacity: [0, 1],
@@ -92,7 +93,7 @@ function revealFades() {
       }),
     );
   });
-  document.querySelectorAll<HTMLElement>('[data-reveal="rule"]').forEach((el) => {
+  document.querySelectorAll<HTMLElement>('[data-reveal="rule"]:not([data-seen])').forEach((el) => {
     whenSeen(el, () => animate(el, { scaleX: [0, 1], duration: 1600, ease: 'inOut(3)' }));
   });
 }
@@ -105,7 +106,7 @@ function parallax() {
     animate(el, {
       y: [`-${amount}%`, `${amount}%`],
       ease: 'linear',
-      autoplay: onScroll({ target: el.parentElement!, enter: 'bottom top', leave: 'top bottom', sync: 0.25 }),
+      autoplay: onScroll({ target: el.parentElement!, enter: 'bottom top', leave: 'top bottom', sync: true }),
     });
   });
 }
@@ -181,8 +182,12 @@ export function initMotion() {
   clocks();
   blueprint();
   document.documentElement.classList.add('motion-ready');
-  if (reduced) return;
+  if (reduced) {
+    initScrollbar();
+    return;
+  }
   smoothScroll();
+  initScrollbar();
   window.addEventListener('scroll', flushReveals, { passive: true });
   window.addEventListener('resize', flushReveals, { passive: true });
   revealLines();
