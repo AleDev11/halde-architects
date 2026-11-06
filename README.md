@@ -14,7 +14,13 @@ All projects, people and quotes are invented. Press **G** on any page to see the
 - **Rendered on the server, then taken over.** The same functions run at build time, so the time and angles are correct before any JavaScript loads. The 3D scene loads after the headline has painted.
 - **Scroll maps to the day.** Scroll position is a 0 to 1 progress value, turned into a clock time inside that date's daylight. Changing the date eases between the two sun paths and rebuilds the hour track.
 - **Reveals that cannot strand content.** Anything at or above the trigger line plays, so an anchor link, the End key or a restored scroll position never leaves a blank section behind. If the scripts fail to load, a timeout shows the page without its animations.
+- **Reloads that hold still.** An inline script restores the scroll position before the first paint and marks what is already on screen, so a reload or the back button lands in place with nothing to re-animate. The intro plays once per session.
+- **A scrollbar drawn like a plan scale.** For mouse users, a thin bar with a tick at each section replaces the native one. It blends against light and dark sections, and it can be dragged or clicked. Touch devices keep the native scrolling.
 - **Fallbacks.** Reduced motion gets a static hero at a fixed hour, and browsers without WebGL get a photograph of a real model.
+
+## Error pages
+
+`404`, `403`, `500` and `503` share [`ErrorPage.astro`](src/components/ErrorPage.astro), each with its own drawing. GitHub Pages only serves the 404 automatically; the others are ready for a host that can map status codes to pages.
 
 ## Stack
 
